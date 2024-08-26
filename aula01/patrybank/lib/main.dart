@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const PatryBankApp());
-}
+void main() => runApp(const PatryBankApp());
 
 class PatryBankApp extends StatelessWidget {
   const PatryBankApp({
@@ -38,50 +36,59 @@ class FormularioTransferencia extends StatelessWidget {
         ),
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _controladorCampoNumeroConta,
-                style: const TextStyle(fontSize: 24.0),
-                decoration: const InputDecoration(
-                    labelText: 'Número da conta',
-                    hintText: '0000' // <- placeholder
-                    ),
-                keyboardType:
-                    TextInputType.number, // transforma em teclado numérico
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-              child: TextField(
-                controller: _controladorCampoValor,
-                style: const TextStyle(fontSize: 24.0),
-                decoration: const InputDecoration(
-                    icon: Icon(Icons.monetization_on),
-                    labelText: 'Valor',
-                    hintText: '0.00' // placeholder
-                    ),
-                keyboardType:
-                    TextInputType.number, // transforma em teclado numérico
-              ),
+            NossoInputPersonalizado(
+                controlador: _controladorCampoNumeroConta,
+                labelTexto: 'Número da Conta',
+                dica: '0000'),
+            NossoInputPersonalizado(
+              controlador: _controladorCampoValor,
+              labelTexto: 'Valor',
+              dica: '000.0',
+              icone: Icons.monetization_on,
             ),
             ElevatedButton(
               child: const Text('Confirmar'),
-              onPressed: () {
-                debugPrint('clicou no confirmar');
-                final int? numeroConta =
-                    int.tryParse(_controladorCampoNumeroConta.text);
-                final double? valor =
-                    double.tryParse(_controladorCampoValor.text);
-
-                if (numeroConta != null && valor != null) {
-                  final transferenciaCriada = Transferencia(valor, numeroConta);
-                  debugPrint('$transferenciaCriada');
-                }
-              },
+              onPressed: () => _criaTransferencia(), // método extraído
             )
           ],
         ));
+  }
+
+  void _criaTransferencia() {
+    final int? numeroConta = int.tryParse(_controladorCampoNumeroConta.text);
+    final double? valor = double.tryParse(_controladorCampoValor.text);
+
+    if (numeroConta != null && valor != null) {
+      final transferenciaCriada = Transferencia(valor, numeroConta);
+      debugPrint('$transferenciaCriada');
+    }
+  }
+}
+
+class NossoInputPersonalizado extends StatelessWidget {
+  final TextEditingController? controlador;
+  final String? labelTexto;
+  final String? dica;
+  final IconData? icone;
+
+  const NossoInputPersonalizado(
+      {super.key, this.controlador, this.labelTexto, this.dica, this.icone});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: controlador,
+        style: const TextStyle(fontSize: 24.0),
+        decoration: InputDecoration(
+          icon: icone != null ? Icon(icone) : null,
+          labelText: labelTexto,
+          hintText: dica, // <- placeholder
+        ),
+        keyboardType: TextInputType.number, // transforma em teclado numérico
+      ),
+    );
   }
 }
 
